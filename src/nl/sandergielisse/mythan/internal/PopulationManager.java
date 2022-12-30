@@ -34,21 +34,21 @@ public class PopulationManager {
   private int populationSize = 500;
   private Genome latestFitness;
 
-  public PopulationManager(EvolutionCore evolutionCore) {
+  public PopulationManager(final EvolutionCore evolutionCore) {
     this.evolutionCore = evolutionCore;
     this.currentPopulation = new Population(this.evolutionCore);
   }
 
   public Population getPopulation() {
-    return currentPopulation;
+    return this.currentPopulation;
   }
 
   public int getPopulationSize() {
-    return populationSize;
+    return this.populationSize;
   }
 
   public EvolutionCore getCore() {
-    return evolutionCore;
+    return this.evolutionCore;
   }
 
   public List<Species> getSpecies() {
@@ -56,41 +56,41 @@ public class PopulationManager {
   }
 
   public Genome getLatestFitness() {
-    return latestFitness;
+    return this.latestFitness;
   }
 
   public void newGeneration() {
     this.currentGeneration++;
 
     // start with calling getBestPerforming() for every species so that calculateFitness() is executed
-    Map<Species, List<Genome>> bestPerforming = new HashMap<>();
-    for (Species sp : this.getSpecies()) {
+    final Map<Species, List<Genome>> bestPerforming = new HashMap<>();
+    for (final Species sp : this.getSpecies()) {
       bestPerforming.put(sp, sp.getBestPerforming());
     }
 
     // calculate the total average
     double sum = 0;
-    for (Species sp : this.getSpecies()) {
+    for (final Species sp : this.getSpecies()) {
       sum += sp.getAverageFitness();
     }
 
-    HashMap<Species, Genome> vips = new HashMap<>();
-    Iterator<Species> it = this.getSpecies().iterator();
+    final HashMap<Species, Genome> vips = new HashMap<>();
+    final Iterator<Species> it = this.getSpecies().iterator();
     while (it.hasNext()) {
-      Species sp = it.next();
+      final Species sp = it.next();
 
       /**
        * We start by eliminating the worst performing genome's from every species.
        */
-      List<Genome> best = bestPerforming.get(sp);
+      final List<Genome> best = bestPerforming.get(sp);
       if (best == null)
         throw new AssertionError();
 
-      double remove = Math.ceil(best.size() * this.getCore().getSetting(Setting.GENERATION_ELIMINATION_PERCENTAGE));
-      int start = (int) (Math.floor(best.size() - remove) + 1);
+      final double remove = Math.ceil(best.size() * this.evolutionCore.getSetting(Setting.GENERATION_ELIMINATION_PERCENTAGE));
+      final int start = (int) (Math.floor(best.size() - remove) + 1);
 
       for (int i = start; i < best.size(); i++) {
-        Genome bad = best.get(i);
+        final Genome bad = best.get(i);
         sp.remove(bad);
       }
 
@@ -109,8 +109,8 @@ public class PopulationManager {
        * Remove all species which don't get any breeding spots in the next generation.
        */
 
-      double totalSize = this.getPopulationSize();
-      double breedsAllowed = Math.floor(sp.getAverageFitness() / sum * totalSize) - 1.0;
+      final double totalSize = this.populationSize;
+      final double breedsAllowed = Math.floor(sp.getAverageFitness() / sum * totalSize) - 1.0;
 
       if (breedsAllowed < 1) {
         // System.out.println("Species was removed, breeds allowed < 1.");
@@ -121,13 +121,13 @@ public class PopulationManager {
       /**
        * Copy the best of every species directly into the next generation.
        */
-      Genome bestOfSpecies = best.get(0);
+      final Genome bestOfSpecies = best.get(0);
       // vips.put(sp, bestOfSpecies);
     }
 
     {
       int size = 0;
-      for (Species sp : this.getSpecies()) {
+      for (final Species sp : this.getSpecies()) {
         size += sp.getMembers().size();
       }
       System.out.println("Building generation " + this.currentGeneration + "... Now " + this.getSpecies().size() + " species active (with a total size of " + size + ").");
@@ -139,13 +139,13 @@ public class PopulationManager {
 
     int populationSize = 0;
 
-    Map<Species, Set<Genome>> oldMembers = new HashMap<>();
-    for (Species sp : this.getSpecies()) {
+    final Map<Species, Set<Genome>> oldMembers = new HashMap<>();
+    for (final Species sp : this.getSpecies()) {
       oldMembers.put(sp, new HashSet<>(sp.getMembers()));
 
       sp.getMembers().clear();
 
-      Genome vip = vips.get(sp);
+      final Genome vip = vips.get(sp);
       if (vip != null) {
         sp.getMembers().add(vip);
         populationSize++;
@@ -156,19 +156,19 @@ public class PopulationManager {
      * Fill the population with new children.
      */
     while (populationSize < this.populationSize) {
-      Species randomSpecies = Random.random(this.getSpecies());
-      Set<Genome> oldMems = oldMembers.get(randomSpecies);
+      final Species randomSpecies = Random.random(this.getSpecies());
+      final Set<Genome> oldMems = oldMembers.get(randomSpecies);
 
       if (oldMems != null) {
-        if (Random.success(this.getCore().getSetting(Setting.BREED_CROSS_CHANCE))) {
+        if (Random.success(this.evolutionCore.getSetting(Setting.BREED_CROSS_CHANCE))) {
           // cross
-          Genome father = Random.random(oldMems);
-          Genome mother = Random.random(oldMems);
+          final Genome father = Random.random(oldMems);
+          final Genome mother = Random.random(oldMems);
 
           Genome.crossAndAdd(father, mother);
         } else {
           // don't cross just copy
-          Genome g = Random.random(oldMems).clone();
+          final Genome g = Random.random(oldMems).clone();
           g.mutate();
           randomSpecies.getMembers().add(g);
         }
@@ -176,15 +176,15 @@ public class PopulationManager {
       }
     }
 
-    Iterator<Species> its = this.getSpecies().iterator();
+    final Iterator<Species> its = this.getSpecies().iterator();
     while (its.hasNext()) {
-      Species sp = its.next();
+      final Species sp = its.next();
       if (sp.getMembers().isEmpty()) {
         its.remove();
       }
     }
 
-    for (Species sp : this.getSpecies()) {
+    for (final Species sp : this.getSpecies()) {
       sp.update();
     }
 
@@ -197,40 +197,40 @@ public class PopulationManager {
     System.out.println(this.latestFitness.toString());
   }
 
-  public void initialize(int populationSize) {
+  public void initialize(final int populationSize) {
     this.populationSize = populationSize;
 
     if (this.currentGeneration != 1)
       throw new UnsupportedOperationException("The initialize() method should only be called for the first generation");
 
-    Genome init = this.initial();
+    final Genome init = this.initial();
 
-    for (int i = 0; i < this.getPopulationSize(); i++) {
+    for (int i = 0; i < this.populationSize; i++) {
       // new genome, choose random weights
-      Genome genome = init.clone();
-      for (Gene gene : genome.getGenes()) { // genes are cloned as well
-        double dist = this.getCore().getSetting(Setting.MUTATION_WEIGHT_CHANCE_RANDOM_RANGE);
+      final Genome genome = init.clone();
+      for (final Gene gene : genome.getGenes()) { // genes are cloned as well
+        final double dist = this.evolutionCore.getSetting(Setting.MUTATION_WEIGHT_CHANCE_RANDOM_RANGE);
         gene.setWeight(Random.random(-dist, dist));
       }
       // System.out.println("GENOME " + genome.toString());
-      this.getCore().getPopulationManager().getPopulation().addGenome(genome);
+      this.evolutionCore.getPopulationManager().currentPopulation.addGenome(genome);
     }
   }
 
   private Genome initial() {
-    Integer[] inputs = new Integer[this.getCore().getInputSize()];
+    final Integer[] inputs = new Integer[this.evolutionCore.getInputSize()];
     for (int i = 0; i < inputs.length; i++)
       inputs[i] = i + 1;
 
-    Integer[] outputs = new Integer[this.getCore().getOutputSize()];
+    final Integer[] outputs = new Integer[this.evolutionCore.getOutputSize()];
     for (int i = 0; i < outputs.length; i++)
       outputs[i] = inputs.length + i + 1;
 
-    double dist = this.getCore().getSetting(Setting.MUTATION_WEIGHT_CHANCE_RANDOM_RANGE);
-    Genome gen = new Genome(this.getCore(), null, inputs, outputs);
-    for (int in = 1; in <= this.getCore().getInputSize(); in++) {
-      for (int out = 1; out <= this.getCore().getOutputSize(); out++) {
-        gen.addGene(new Gene(this.getCore().getNextInnovationNumber(), in, this.getCore().getInputSize() + out, Random.random(-dist, dist), true), null, null);
+    final double dist = this.evolutionCore.getSetting(Setting.MUTATION_WEIGHT_CHANCE_RANDOM_RANGE);
+    final Genome gen = new Genome(this.evolutionCore, null, inputs, outputs);
+    for (int in = 1; in <= this.evolutionCore.getInputSize(); in++) {
+      for (int out = 1; out <= this.evolutionCore.getOutputSize(); out++) {
+        gen.addGene(new Gene(this.evolutionCore.getNextInnovationNumber(), in, this.evolutionCore.getInputSize() + out, Random.random(-dist, dist), true), null, null);
       }
     }
     return gen;

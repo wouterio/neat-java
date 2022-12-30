@@ -15,6 +15,7 @@
  */
 package nl.sandergielisse.mythan.internal.genes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +24,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -37,11 +37,11 @@ import nl.sandergielisse.mythan.internal.Species;
 
 public class Genome implements Cloneable, Network {
 
-  private static int counter = 0;
-  private final int id = counter++;
+  private static int counter;
+  private final int id = Genome.counter++;
 
   public int getId() {
-    return id;
+    return this.id;
   }
 
   /**
@@ -55,18 +55,18 @@ public class Genome implements Cloneable, Network {
 
   private Species species;
 
-  public Genome(EvolutionCore core, Species member, Integer[] inputNodes, Integer[] outputNodes) {
+  public Genome(final EvolutionCore core, final Species member, final Integer[] inputNodes, final Integer[] outputNodes) {
     this.core = core;
     this.species = member;
 
-    for (int in : inputNodes)
+    for (final int in : inputNodes)
       this.addInputNode(in);
 
-    for (int out : outputNodes)
+    for (final int out : outputNodes)
       this.addOutputNode(out);
   }
 
-  public void setSpecies(Species sp) {
+  public void setSpecies(final Species sp) {
     if (this.fitness != -1)
       throw new UnsupportedOperationException("setSpecies() must be called before getFitness()");
 
@@ -74,7 +74,7 @@ public class Genome implements Cloneable, Network {
   }
 
   public Species getSpecies() {
-    return species;
+    return this.species;
   }
 
   public Integer[] getInputs() {
@@ -88,10 +88,10 @@ public class Genome implements Cloneable, Network {
   /**
    * Please note that the returned list is read-only.
    */
-  public List<Integer> getNodes(boolean includeInput, boolean includeHidden, boolean includeOutput) {
-    List<Integer> ids = new ArrayList<>();
+  public List<Integer> getNodes(final boolean includeInput, final boolean includeHidden, final boolean includeOutput) {
+    final List<Integer> ids = new ArrayList<>();
 
-    for (int input : this.getAllNodes()) {
+    for (final int input : this.getAllNodes()) {
       if (this.isInputNode(input) && !includeInput)
         continue;
       if (this.isHiddenNode(input) && !includeHidden)
@@ -106,29 +106,27 @@ public class Genome implements Cloneable, Network {
   }
 
   public int getHighestNode() {
-    List<Integer> its = this.getAllNodes();
+    final List<Integer> its = this.getAllNodes();
     return its.get(its.size() - 1);
   }
 
   public List<Integer> getAllNodes() {
-    List<Integer> ids = new ArrayList<>();
-    for (Gene gene : this.getGenes()) {
-      if (!ids.contains(gene.getFrom())) {
+    final List<Integer> ids = new ArrayList<>();
+    for (final Gene gene : this.getGenes()) {
+      if (!ids.contains(gene.getFrom()))
         ids.add(gene.getFrom());
-      }
-      if (!ids.contains(gene.getTo())) {
+      if (!ids.contains(gene.getTo()))
         ids.add(gene.getTo());
-      }
     }
     Collections.sort(ids);
     return ids;
   }
 
-  public boolean isHiddenNode(int node) {
+  public boolean isHiddenNode(final int node) {
     return !this.isInputNode(node) && !this.isOutputNode(node);
   }
 
-  public void addInputNode(int node) {
+  public void addInputNode(final int node) {
     if (this.fitness != -1)
       throw new UnsupportedOperationException("addInputNode() must be called before getFitness()");
 
@@ -138,7 +136,7 @@ public class Genome implements Cloneable, Network {
     this.inputNodes.add(node);
   }
 
-  public void addOutputNode(int node) {
+  public void addOutputNode(final int node) {
     if (this.fitness != -1)
       throw new UnsupportedOperationException("addOutputNode() must be called before getFitness()");
 
@@ -149,78 +147,72 @@ public class Genome implements Cloneable, Network {
   }
 
   public List<Integer> getInputNodes() {
-    return inputNodes;
+    return this.inputNodes;
   }
 
   public List<Integer> getOutputNodes() {
-    return outputNodes;
+    return this.outputNodes;
   }
 
   public List<Integer> getHiddenNodes() {
-    List<Integer> its = new ArrayList<>();
-    for (int node : this.getAllNodes()) {
-      if (!this.isInputNode(node) && !this.isOutputNode(node)) {
+    final List<Integer> its = new ArrayList<>();
+    for (final int node : this.getAllNodes())
+      if (!this.isInputNode(node) && !this.isOutputNode(node))
         its.add(node);
-      }
-    }
     return its;
   }
 
-  public boolean isInputNode(int node) {
+  public boolean isInputNode(final int node) {
     return this.inputNodes.contains(node);
   }
 
-  public boolean isOutputNode(int node) {
+  public boolean isOutputNode(final int node) {
     return this.outputNodes.contains(node);
   }
 
   public EvolutionCore getCore() {
-    return core;
+    return this.core;
   }
 
-  public void addGene(Gene gene, Genome parent1, Genome parent2) {
-
+  public void addGene(final Gene gene, final Genome parent1, final Genome parent2) {
     if (this.fitness != -1)
       throw new UnsupportedOperationException("addGene() must be called before getFitness()");
 
     if (this.genes.containsKey(gene.getInnovationNumber())) {
-      System.out.println(this.toString());
+      System.out.println(this);
       throw new UnsupportedOperationException("Genome already has gene with innovation number " + gene.getInnovationNumber());
     }
 
-    gene = gene.clone(); // make sure we're working with a cloned instance
-    if (parent1 != null && parent2 != null) {
-      if (parent1.hasGene(gene.getInnovationNumber()) && parent2.hasGene(gene.getInnovationNumber())) {
+    final Gene clone = gene.clone(); // make sure we're working with a cloned instance
+    if (parent1 != null && parent2 != null)
+      if (parent1.hasGene(clone.getInnovationNumber()) && parent2.hasGene(clone.getInnovationNumber())) {
         /**
          * There is a chance that a gene which is disabled in one of the parents is disabled.
          */
-        boolean dis1 = !parent1.getGene(gene.getInnovationNumber()).isEnabled();
-        boolean dis2 = !parent2.getGene(gene.getInnovationNumber()).isEnabled();
+        final boolean dis1 = !parent1.getGene(clone.getInnovationNumber()).isEnabled();
+        final boolean dis2 = !parent2.getGene(clone.getInnovationNumber()).isEnabled();
 
         // only one of them is disabled
         if ((dis1 && !dis2) || (!dis1 && dis2)) {
-          boolean disabled = Random.success(this.getCore().getSetting(Setting.GENE_DISABLE_CHANCE));
-          gene.setEnabled(!disabled);
+          final boolean disabled = Random.success(this.core.getSetting(Setting.GENE_DISABLE_CHANCE));
+          clone.setEnabled(!disabled);
         }
       }
-    }
 
-    this.genes.put(gene.getInnovationNumber(), gene); // clone it so we are sure we have a new instance
+    this.genes.put(clone.getInnovationNumber(), clone); // clone it so we are sure we have a new instance
   }
 
   public Collection<Gene> getGenes() {
-    return genes.values();
+    return this.genes.values();
   }
 
   public int getHighestInnovationNumber() {
-    if (this.genes.isEmpty()) {
+    if (this.genes.isEmpty())
       throw new UnsupportedOperationException("Genes may not be empty");
-    }
-    Iterator<Gene> it = this.genes.values().iterator();
+    final Iterator<Gene> it = this.genes.values().iterator();
     Gene last = null;
-    while (it.hasNext()) {
+    while (it.hasNext())
       last = it.next();
-    }
     // can't be null otherwise UnsupportedOperationException has already been thrown
     if (last == null)
       throw new AssertionError();
@@ -228,11 +220,11 @@ public class Genome implements Cloneable, Network {
     return last.getInnovationNumber();
   }
 
-  private boolean hasGene(int innovationNumber) {
+  private boolean hasGene(final int innovationNumber) {
     return this.genes.containsKey(innovationNumber);
   }
 
-  private Gene getGene(int innovationNumber) {
+  private Gene getGene(final int innovationNumber) {
     return this.genes.get(innovationNumber);
   }
 
@@ -240,10 +232,9 @@ public class Genome implements Cloneable, Network {
    * ArrayList
    */
   public List<Connection> getAllConnections() {
-    List<Connection> conns = new ArrayList<>();
-    for (Gene gene : this.getGenes()) {
+    final List<Connection> conns = new ArrayList<>();
+    for (final Gene gene : this.getGenes())
       conns.add(new Connection(gene.getFrom(), gene.getTo()));
-    }
     return conns;
   }
 
@@ -251,12 +242,10 @@ public class Genome implements Cloneable, Network {
    * HashSet
    */
   public Collection<? extends Connection> getActiveConnections() {
-    Set<Connection> conns = new HashSet<>();
-    for (Gene gene : this.getGenes()) {
-      if (gene.isEnabled()) {
+    final Set<Connection> conns = new HashSet<>();
+    for (final Gene gene : this.getGenes())
+      if (gene.isEnabled())
         conns.add(new Connection(gene.getFrom(), gene.getTo()));
-      }
-    }
     return conns;
   }
 
@@ -266,13 +255,12 @@ public class Genome implements Cloneable, Network {
    */
   @Override
   public Genome clone() {
-    Genome newGenome = new Genome(this.core, this.getSpecies(), this.getInputs(), this.getOutputs());
+    final Genome newGenome = new Genome(this.core, this.species, this.getInputs(), this.getOutputs());
 
     // clone the values of the genes map
     newGenome.genes = new TreeMap<>();
-    for (Entry<Integer, Gene> s : this.genes.entrySet()) {
+    for (final Map.Entry<Integer, Gene> s : this.genes.entrySet())
       newGenome.genes.put(s.getKey(), s.getValue().clone());
-    }
 
     newGenome.inputNodes = new ArrayList<>(this.inputNodes);
     newGenome.outputNodes = new ArrayList<>(this.outputNodes);
@@ -288,23 +276,23 @@ public class Genome implements Cloneable, Network {
     if (this.fitness != -1)
       throw new UnsupportedOperationException("fixDuplicates() must be called before getFitness()");
 
-    for (Species sp : this.getCore().getPopulationManager().getPopulation().getSpecies()) {
-      for (Genome genome : sp.getMembers()) {
-        List<Connection> conA = this.getAllConnections();
-        List<Connection> conB = genome.getAllConnections();
+    for (final Species sp : this.core.getPopulationManager().getPopulation().getSpecies())
+      for (final Genome genome : sp.getMembers()) {
+        final List<Connection> conA = this.getAllConnections();
+        final List<Connection> conB = genome.getAllConnections();
 
         if (ArrayUtils.equals(conB, conA)) {
-          Iterator<Gene> toCloneFrom = new ArrayList<>(genome.genes.values()).iterator();
-          Iterator<Gene> toReplace = new ArrayList<>(this.genes.values()).iterator();
+          final Iterator<Gene> toCloneFrom = new ArrayList<>(genome.genes.values()).iterator();
+          final Iterator<Gene> toReplace = new ArrayList<>(this.genes.values()).iterator();
 
           while (toCloneFrom.hasNext() && toReplace.hasNext()) {
-            Gene from = toCloneFrom.next();
-            Gene to = toReplace.next();
+            final Gene from = toCloneFrom.next();
+            final Gene to = toReplace.next();
 
-            int oldInno = to.getInnovationNumber();
-            int changeTo = from.getInnovationNumber();
+            final int oldInno = to.getInnovationNumber();
+            final int changeTo = from.getInnovationNumber();
 
-            Gene old = this.genes.remove(oldInno);
+            final Gene old = this.genes.remove(oldInno);
             old.setInnovationNumber(changeTo);
             this.genes.put(old.getInnovationNumber(), old);
           }
@@ -313,22 +301,21 @@ public class Genome implements Cloneable, Network {
           return;
         }
       }
-    }
   }
 
   /**
    * Make sure calculateFitness() has been called already.
    */
-  public static void crossAndAdd(Genome a, Genome b) {
+  public static void crossAndAdd(final Genome a, final Genome b) {
 
-    if (!a.getSpecies().equals(b.getSpecies()))
+    if (!a.species.equals(b.species))
       throw new UnsupportedOperationException("Species must match when crossing");
 
-    double aFitness = a.getFitness();
-    double bFitness = b.getFitness();
+    final double aFitness = a.getFitness();
+    final double bFitness = b.getFitness();
 
-    Genome strongest;
-    Genome weakest;
+    final Genome strongest;
+    final Genome weakest;
     if (aFitness > bFitness) {
       strongest = a;
       weakest = b;
@@ -336,15 +323,15 @@ public class Genome implements Cloneable, Network {
       strongest = b;
       weakest = a;
     }
-    Genome child = crossDominant(strongest, weakest);
-    a.getCore().getPopulationManager().getPopulation().addGenome(child);
+    final Genome child = Genome.crossDominant(strongest, weakest);
+    a.core.getPopulationManager().getPopulation().addGenome(child);
   }
 
   /**
    * Also calls the mutations.
    */
-  private static Genome crossDominant(Genome dominant, Genome other) {
-    if (!dominant.getSpecies().equals(other.getSpecies()))
+  private static Genome crossDominant(final Genome dominant, final Genome other) {
+    if (!dominant.species.equals(other.species))
       throw new UnsupportedOperationException("Species must match when crossing");
 
     if (dominant.getGenes().isEmpty() || other.getGenes().isEmpty())
@@ -356,26 +343,22 @@ public class Genome implements Cloneable, Network {
       if (i > 100000)
         throw new RuntimeException();
 
-      if (dominant.hasGene(i) && other.hasGene(i)) {
+      if (dominant.hasGene(i) && other.hasGene(i))
         sharedLength = i;
-      } else {
+      else
         break;
-      }
     }
     if (sharedLength == -1)
       throw new AssertionError();
 
-    Genome newGenome = new Genome(dominant.getCore(), null, dominant.getInputs(), dominant.getOutputs()); // inputs/outputs should match so it doesn't matter where we get it from
-    for (int i = 1; i <= dominant.getHighestInnovationNumber(); i++) {
-      if (dominant.hasGene(i)) {
-        // the following should also be random if both parents have the gene
-        if (other.hasGene(i)) {
+    final Genome newGenome = new Genome(dominant.core, null, dominant.getInputs(), dominant.getOutputs()); // inputs/outputs should match so it doesn't matter where we get it from
+    // the following should also be random if both parents have the gene
+    for (int i = 1; i <= dominant.getHighestInnovationNumber(); i++)
+      if (dominant.hasGene(i))
+        if (other.hasGene(i))
           newGenome.addGene(Random.random(new Gene[]{dominant.getGene(i), other.getGene(i)}), dominant, other);
-        } else {
+        else
           newGenome.addGene(dominant.getGene(i), dominant, other);
-        }
-      }
-    }
 
     // make sure there are no duplicates
     newGenome.fixDuplicates();
@@ -387,7 +370,7 @@ public class Genome implements Cloneable, Network {
   }
 
   public void mutate() {
-    Mutation mutation = new Mutation(this);
+    final Mutation mutation = new Mutation(this);
     mutation.mutate();
   }
 
@@ -395,13 +378,13 @@ public class Genome implements Cloneable, Network {
    * Returns the distance between two existing genomes using the following formula.
    * d = (c1 * E) / N + (c2 * D) / N + c3 * W
    */
-  public static double distance(Genome a, Genome b) {
+  public static double distance(final Genome a, final Genome b) {
     // find the longest
-    int aLength = a.getHighestInnovationNumber();
-    int bLength = b.getHighestInnovationNumber();
+    final int aLength = a.getHighestInnovationNumber();
+    final int bLength = b.getHighestInnovationNumber();
 
-    Genome longest;
-    Genome shortest;
+    final Genome longest;
+    final Genome shortest;
 
     if (aLength > bLength) {
       longest = a;
@@ -411,29 +394,26 @@ public class Genome implements Cloneable, Network {
       shortest = a;
     }
 
-    int shortestLength = shortest.getHighestInnovationNumber();
-    int longestLength = longest.getHighestInnovationNumber();
+    final int shortestLength = shortest.getHighestInnovationNumber();
+    final int longestLength = longest.getHighestInnovationNumber();
 
     double disjoint = 0; // use double so it won't be used as an int in the formula
     double excess = 0; // use double so it won't be used as an int in the formula
 
-    List<Double> weights = new ArrayList<>();
+    final List<Double> weights = new ArrayList<>();
     for (int i = 1; i <= longestLength; i++) {
-      Gene aa = longest.getGene(i);
-      Gene bb = shortest.getGene(i);
+      final Gene aa = longest.getGene(i);
+      final Gene bb = shortest.getGene(i);
 
-      if ((aa == null && bb != null) || (aa != null && bb == null)) {
-        // only present in one of them
-
-        if (i <= shortestLength) {
+      // only present in one of them
+      if ((aa == null && bb != null) || (aa != null && bb == null))
+        if (i <= shortestLength)
           disjoint++;
-        } else if (i > shortestLength) {
+        else if (i > shortestLength)
           excess++;
-        }
-      }
       if (aa != null && bb != null) {
         // matching gene
-        double distance = Math.abs(aa.getWeight() - bb.getWeight());
+        final double distance = Math.abs(aa.getWeight() - bb.getWeight());
         weights.add(distance);
       }
     }
@@ -441,24 +421,24 @@ public class Genome implements Cloneable, Network {
     double total = 0;
     double size = 0;
 
-    for (double w : weights) {
+    for (final double w : weights) {
       total += w;
       size++;
     }
 
-    double averageWeightDistance = total / size;
-    double n = longest.getGenes().size();
-    double c1 = a.getCore().getSetting(Setting.DISTANCE_EXCESS_WEIGHT);
-    double c2 = a.getCore().getSetting(Setting.DISTANCE_DISJOINT_WEIGHT);
-    double c3 = a.getCore().getSetting(Setting.DISTANCE_WEIGHTS_WEIGHT);
+    final double averageWeightDistance = total / size;
+    final double n = longest.getGenes().size();
+    final double c1 = a.core.getSetting(Setting.DISTANCE_EXCESS_WEIGHT);
+    final double c2 = a.core.getSetting(Setting.DISTANCE_DISJOINT_WEIGHT);
+    final double c3 = a.core.getSetting(Setting.DISTANCE_WEIGHTS_WEIGHT);
 
     // formula: d = (c1 * E) / N + (c2 * D) / N + c3 * W
-    double d = ((c1 * excess) / n) + ((c2 * disjoint) / n) + (c3 * averageWeightDistance);
+    final double d = ((c1 * excess) / n) + ((c2 * disjoint) / n) + (c3 * averageWeightDistance);
     return d;
   }
 
   @Override
-  public double[] calculate(double[] input) {
+  public double[] calculate(final double[] input) {
     return new BackTraceTask(this, this.core.getActivationFunction(), input).calculateOutput();
   }
 
@@ -467,9 +447,8 @@ public class Genome implements Cloneable, Network {
   private double calculateFitness() {
     this.fitness = this.core.getFitnessCalculator().getFitness(this);
 
-    if (this.fitness > this.getSpecies().getHighestFitness()) {
-      this.getSpecies().setHighestFitness(this.fitness);
-    }
+    if (this.fitness > this.species.getHighestFitness())
+      this.species.setHighestFitness(this.fitness);
     return this.fitness;
   }
 
@@ -479,7 +458,7 @@ public class Genome implements Cloneable, Network {
    */
   public double getFitness() {
     if (this.fitness == -1)
-      return calculateFitness();
+      return this.calculateFitness();
 
     return this.fitness;
   }
@@ -488,12 +467,12 @@ public class Genome implements Cloneable, Network {
    * Class sorts by descending order, so best comes first.
    * Make sure calculateFitness() has been called already.
    */
-  public static class GenomeSorter implements Comparator<Genome> {
+  public static class GenomeSorter implements Comparator<Genome>, Serializable {
 
     @Override
-    public int compare(Genome o1, Genome o2) {
-      double a1 = o1.getFitness();
-      double a2 = o2.getFitness();
+    public int compare(final Genome o1, final Genome o2) {
+      final double a1 = o1.getFitness();
+      final double a2 = o2.getFitness();
 
       if (a1 > a2)
         return -1;
@@ -505,9 +484,9 @@ public class Genome implements Cloneable, Network {
 
   @Override
   public String toString() {
-    StringBuilder genes = new StringBuilder();
-    for (Entry<Integer, Gene> gen : this.genes.entrySet()) {
-      Gene gene = gen.getValue();
+    final StringBuilder genes = new StringBuilder();
+    for (final Map.Entry<Integer, Gene> gen : this.genes.entrySet()) {
+      final Gene gene = gen.getValue();
       genes.append("[ " + gen.getKey() + "=" + gene.getInnovationNumber() + " , " + gene.getFrom() + " , " + gene.getTo() + " , " + gene.getWeight() + " " + gene.isEnabled() + " ] ");
     }
     return genes.toString();

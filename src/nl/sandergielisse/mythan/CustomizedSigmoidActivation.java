@@ -18,8 +18,8 @@ package nl.sandergielisse.mythan;
 public class CustomizedSigmoidActivation implements ActivationFunction {
 
   @Override
-  public double activate(double x) {
-    return 1D / (1D + Math.exp(-4.9 * x));
+  public double activate(final double x) {
+    return 1.0D / (1.0D + Math.exp(-4.9 * x));
     //return 2.0 / (1.0 + Math.exp(-4.9 * x)) - 1.0;
   }
 }

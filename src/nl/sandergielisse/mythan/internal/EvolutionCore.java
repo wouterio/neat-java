@@ -42,22 +42,22 @@ public class EvolutionCore implements Mythan {
   /**
    * Map of settings.
    */
-  private final Map<Setting, Double> settings = new HashMap<Setting, Double>() {
+  private final Map<Setting, Double> settings = new HashMap<>() {
     private static final long serialVersionUID = 2033443707932774057L;
 
     {
-      for (Setting setting : Setting.values()) {
+      for (final Setting setting : Setting.values()) {
         this.put(setting, setting.getDefaultValue());
       }
     }
   };
 
-  private FitnessCalculator fitnessCalculator;
+  private final FitnessCalculator fitnessCalculator;
   private int currentInnovationNumber = 1;
   private final ActivationFunction activationFunction;
   private final PopulationManager populationManager = new PopulationManager(this);
 
-  public EvolutionCore(int in, int out, ActivationFunction activationFunction, FitnessCalculator calc) {
+  public EvolutionCore(final int in, final int out, final ActivationFunction activationFunction, final FitnessCalculator calc) {
     this.inputSize = in;
     this.outputSize = out;
     this.activationFunction = activationFunction;
@@ -66,31 +66,33 @@ public class EvolutionCore implements Mythan {
 
   @Override
   public int getInputSize() {
-    return inputSize;
+    return this.inputSize;
   }
 
   @Override
   public int getOutputSize() {
-    return outputSize;
+    return this.outputSize;
   }
 
   @Override
-  public double getSetting(Setting setting) {
+  public double getSetting(final Setting setting) {
     return this.settings.get(setting);
   }
 
   @Override
-  public void setSetting(Setting setting, double value) {
+  public void setSetting(final Setting setting, final double value) {
     this.settings.put(setting, value);
   }
 
   public int getNextInnovationNumber() {
-    return this.currentInnovationNumber++;
+    final int i = this.currentInnovationNumber;
+    this.currentInnovationNumber++;
+    return i;
   }
 
   @Override
   public ActivationFunction getActivationFunction() {
-    return activationFunction;
+    return this.activationFunction;
   }
 
   @Override
@@ -103,37 +105,33 @@ public class EvolutionCore implements Mythan {
   }
 
   @Override
-  public void trainToFitness(int populationSize, double targetFitness) {
+  public void trainToFitness(final int populationSize, final double targetFitness) {
     this.populationManager.initialize(populationSize);
     while (true) {
       this.populationManager.newGeneration();
-      Genome best = this.populationManager.getLatestFitness();
-      this.getFitnessCalculator().generationFinished(best);
+      final Genome best = this.populationManager.getLatestFitness();
+      this.fitnessCalculator.generationFinished(best);
 
       if (best.getFitness() >= targetFitness) {
 
-        Set<Integer> hiddenNodes = new HashSet<>();
+        final Set<Integer> hiddenNodes = new HashSet<>();
         int enabledConns = 0;
 
-        for (Gene g : best.getGenes()) {
+        for (final Gene g : best.getGenes()) {
           if (g.isEnabled()) {
             enabledConns++;
           }
 
           {
-            int node = g.getFrom();
+            final int node = g.getFrom();
             if (!best.isInputNode(node) && !best.isOutputNode(node)) {
-              if (!hiddenNodes.contains(node)) {
-                hiddenNodes.add(node);
-              }
+              hiddenNodes.add(node);
             }
           }
           {
-            int node = g.getTo();
+            final int node = g.getTo();
             if (!best.isInputNode(node) && !best.isOutputNode(node)) {
-              if (!hiddenNodes.contains(node)) {
-                hiddenNodes.add(node);
-              }
+              hiddenNodes.add(node);
             }
           }
         }
@@ -141,7 +139,7 @@ public class EvolutionCore implements Mythan {
         System.out.println("======================================= Mythan =======================================");
         System.out.println("Solution was found with a fitness of " + best.getFitness() + " in generation " + this.populationManager.getGeneration());
         System.out.println("The system had " + hiddenNodes.size() + " hidden units and " + enabledConns + " enabled connections");
-        for (Gene gene : best.getGenes()) {
+        for (final Gene gene : best.getGenes()) {
           System.out.println("	~ " + gene.toString());
         }
         System.out.println("======================================================================================");

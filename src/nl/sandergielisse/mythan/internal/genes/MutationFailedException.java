@@ -20,18 +20,18 @@ public class MutationFailedException extends Exception {
   private static final long serialVersionUID = 6009940212981584159L;
 
   public MutationFailedException() {
-    super();
+
   }
 
-  public MutationFailedException(String message, Throwable cause) {
+  public MutationFailedException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public MutationFailedException(String message) {
+  public MutationFailedException(final String message) {
     super(message);
   }
 
-  public MutationFailedException(Throwable cause) {
+  public MutationFailedException(final Throwable cause) {
     super(cause);
   }
 }

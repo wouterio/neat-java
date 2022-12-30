@@ -18,7 +18,8 @@ package nl.sandergielisse.mythan.internal;
 import java.util.List;
 import java.util.Set;
 
-public class Random {
+public enum Random {
+  ;
 
   private static final java.util.Random random = new java.util.Random();
 
@@ -30,30 +31,30 @@ public class Random {
   }
 
   private static java.util.Random getRandom() {
-    return random;
+    return Random.random;
   }
 
   /**
    * Returns a random object from the given array.
    */
-  public static <T> T random(T[] array) {
+  public static <T> T random(final T[] array) {
     if (array.length == 0)
       throw new UnsupportedOperationException("Given array can not be empty");
 
-    return array[getRandom().nextInt(array.length)];
+    return array[random.nextInt(array.length)];
   }
 
   /**
    * Returns a random object from the given set.
    */
-  public static <T> T random(Set<T> set) {
+  public static <T> T random(final Set<T> set) {
     if (set.size() == 0)
       throw new UnsupportedOperationException("Given set can not be empty");
 
-    int size = set.size();
-    int item = getRandom().nextInt(size);
+    final int size = set.size();
+    final int item = random.nextInt(size);
     int i = 0;
-    for (T t : set) {
+    for (final T t : set) {
       if (i == item)
         return t;
       i = i + 1;
@@ -64,11 +65,11 @@ public class Random {
   /**
    * Returns a random object from the given list.
    */
-  public static <T> T random(List<T> list) {
+  public static <T> T random(final List<T> list) {
     if (list.size() == 0)
       throw new UnsupportedOperationException("Given list can not be empty");
 
-    return list.get(getRandom().nextInt(list.size()));
+    return list.get(random.nextInt(list.size()));
   }
 
   /**
@@ -76,16 +77,16 @@ public class Random {
    *
    * The smaller the given chance, the more unlikely this method will return true.
    */
-  public static boolean success(double chance) {
-    return getRandom().nextDouble() <= chance;
+  public static boolean success(final double chance) {
+    return random.nextDouble() <= chance;
   }
 
   /**
    * Returns a random double between a given min and max
    */
-  public static double random(double min, double max) {
+  public static double random(final double min, final double max) {
     if (min >= max)
       throw new IllegalArgumentException("Min (" + min + ") can not be bigger than or equal to max (" + max + ")");
-    return min + (max - min) * getRandom().nextDouble();
+    return min + (max - min) * random.nextDouble();
   }
 }

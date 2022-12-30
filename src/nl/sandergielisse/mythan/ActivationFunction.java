@@ -17,5 +17,5 @@ package nl.sandergielisse.mythan;
 
 public interface ActivationFunction {
 
-  public double activate(double x);
+  double activate(double x);
 }

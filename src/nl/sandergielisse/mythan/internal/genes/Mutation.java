@@ -37,7 +37,7 @@ public class Mutation {
 
   private final Genome genome;
 
-  public Mutation(Genome genome) {
+  public Mutation(final Genome genome) {
     this.genome = genome;
   }
 
@@ -48,17 +48,17 @@ public class Mutation {
      * 	  The output from the new node will be set to the old connection's weight value.
      */
     if (Random.success(this.genome.getCore().getSetting(Setting.MUTATION_NEW_NODE_CHANCE))) {
-      Gene randomGene = Random.random(new ArrayList<>(this.genome.getGenes()));
+      final Gene randomGene = Random.random(new ArrayList<>(this.genome.getGenes()));
       randomGene.setEnabled(false);
 
       // two new genes
-      int from = randomGene.getFrom();
-      int to = randomGene.getTo();
+      final int from = randomGene.getFrom();
+      final int to = randomGene.getTo();
 
       this.genome.getCore().getNextInnovationNumber();
 
-      int newNodeId = this.genome.getHighestNode() + 1;
-      this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), from, newNodeId, 1D, true), null, null);
+      final int newNodeId = this.genome.getHighestNode() + 1;
+      this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), from, newNodeId, 1.0D, true), null, null);
       this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), newNodeId, to, randomGene.getWeight(), true), null, null);
     }
 
@@ -74,33 +74,34 @@ public class Mutation {
          * yet. We do this because once the network gets bigger, looping through all
          * possible connections would be a very intensive task.
          */
-        Collection<? extends Connection> currentConnections = this.genome.getAllConnections();
+        final Collection<? extends Connection> currentConnections = this.genome.getAllConnections();
 
         int attempts = 0;
 
         Connection maybeNew = null;
         do {
           {
-            if (attempts++ > 40)
+            if (attempts > 40)
               throw new MutationFailedException("New connection could not be created after 40 attempts.");
+            attempts++;
           }
 
-          int from = Random.random(this.genome.getNodes(true, true, false));
+          final int from = Random.random(this.genome.getNodes(true, true, false));
 
-          List<Integer> leftOver = this.genome.getNodes(false, true, true);
+          final List<Integer> leftOver = this.genome.getNodes(false, true, true);
           leftOver.remove((Object) from); // cast to Object, otherwise the wrong method remove(int index); will be called
 
           if (leftOver.isEmpty())
             continue;
 
-          int to = Random.random(leftOver);
+          final int to = Random.random(leftOver);
 
           maybeNew = new Connection(from, to);
-        } while (maybeNew == null || maybeNew.getFrom() == maybeNew.getTo() || currentConnections.contains(maybeNew) || isRecurrent(maybeNew));
+        } while (maybeNew == null || maybeNew.getFrom() == maybeNew.getTo() || currentConnections.contains(maybeNew) || this.isRecurrent(maybeNew));
 
         // add it to the network
-        genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), maybeNew.getFrom(), maybeNew.getTo(), Random.random(-1, 1), true), null, null);
-      } catch (MutationFailedException e) {
+        this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), maybeNew.getFrom(), maybeNew.getTo(), Random.random(-1, 1), true), null, null);
+      } catch (final MutationFailedException e) {
         // System.out.println("Mutation Failed: " + e.getMessage());
       }
     }
@@ -111,39 +112,39 @@ public class Mutation {
     if (Random.success(this.genome.getCore().getSetting(Setting.MUTATION_WEIGHT_CHANCE))) {
       if (Random.success(this.genome.getCore().getSetting(Setting.MUTATION_WEIGHT_RANDOM_CHANCE))) {
         // assign a random new value
-        for (Gene gene : this.genome.getGenes()) {
-          double range = this.genome.getCore().getSetting(Setting.MUTATION_WEIGHT_CHANCE_RANDOM_RANGE);
+        for (final Gene gene : this.genome.getGenes()) {
+          final double range = this.genome.getCore().getSetting(Setting.MUTATION_WEIGHT_CHANCE_RANDOM_RANGE);
           gene.setWeight(Random.random(-range, range));
         }
       } else {
         // uniformly perturb
-        for (Gene gene : this.genome.getGenes()) {
-          double disturbance = this.genome.getCore().getSetting(Setting.MUTATION_WEIGHT_MAX_DISTURBANCE);
-          double uniform = Random.random(-disturbance, disturbance);
+        for (final Gene gene : this.genome.getGenes()) {
+          final double disturbance = this.genome.getCore().getSetting(Setting.MUTATION_WEIGHT_MAX_DISTURBANCE);
+          final double uniform = Random.random(-disturbance, disturbance);
           gene.setWeight(gene.getWeight() + uniform);
         }
       }
     }
   }
 
-  public boolean isRecurrent(Connection with) {
-    Genome tmpGenome = this.genome.clone(); // clone so we can change its genes without actually affecting the original genome
+  public boolean isRecurrent(final Connection with) {
+    final Genome tmpGenome = this.genome.clone(); // clone so we can change its genes without actually affecting the original genome
 
     if (with != null) {
-      Gene gene = new Gene(tmpGenome.getHighestInnovationNumber() + 1, with.getFrom(), with.getTo(), 0, true);
+      final Gene gene = new Gene(tmpGenome.getHighestInnovationNumber() + 1, with.getFrom(), with.getTo(), 0, true);
       tmpGenome.addGene(gene, null, null);
     }
 
     boolean recc = false;
-    for (int hiddenNode : tmpGenome.getHiddenNodes()) {
-      if (isRecurrent(new ArrayList<>(), tmpGenome, hiddenNode)) {
+    for (final int hiddenNode : tmpGenome.getHiddenNodes()) {
+      if (this.isRecurrent(new ArrayList<>(), tmpGenome, hiddenNode)) {
         recc = true;
       }
     }
     return recc;
   }
 
-  private boolean isRecurrent(List<Integer> path, Genome genome, int node) {
+  private boolean isRecurrent(final List<Integer> path, final Genome genome, final int node) {
     if (path.contains(node)) {
       /**
        * We've been here before, we're in an infinite loop.
@@ -153,7 +154,7 @@ public class Mutation {
     path.add(node);
 
     boolean recc = false;
-    for (int from : this.getInputs(genome, node)) {
+    for (final int from : this.getInputs(genome, node)) {
       if (!genome.isInputNode(from)) {
         if (this.isRecurrent(path, genome, from)) {
           recc = true;
@@ -163,9 +164,9 @@ public class Mutation {
     return recc;
   }
 
-  private List<Integer> getInputs(Genome genome, int node) {
-    List<Integer> froms = new ArrayList<>();
-    for (Gene gene : genome.getGenes()) {
+  private List<Integer> getInputs(final Genome genome, final int node) {
+    final List<Integer> froms = new ArrayList<>();
+    for (final Gene gene : genome.getGenes()) {
       if (gene.getTo() == node) {
         froms.add(gene.getFrom());
       }

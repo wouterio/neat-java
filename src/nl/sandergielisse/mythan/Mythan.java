@@ -19,21 +19,21 @@ import nl.sandergielisse.mythan.internal.EvolutionCore;
 
 public interface Mythan {
 
-  public static Mythan newInstance(int inputSize, int outputSize, ActivationFunction function, FitnessCalculator calculator) {
+  static Mythan newInstance(final int inputSize, final int outputSize, final ActivationFunction function, final FitnessCalculator calculator) {
     return new EvolutionCore(inputSize, outputSize, function, calculator);
   }
 
-  public int getInputSize();
+  int getInputSize();
 
-  public int getOutputSize();
+  int getOutputSize();
 
-  public double getSetting(Setting setting);
+  double getSetting(Setting setting);
 
-  public void setSetting(Setting setting, double value);
+  void setSetting(Setting setting, double value);
 
-  public void trainToFitness(int populationSize, double targetFitness);
+  void trainToFitness(int populationSize, double targetFitness);
 
-  public FitnessCalculator getFitnessCalculator();
+  FitnessCalculator getFitnessCalculator();
 
-  public ActivationFunction getActivationFunction();
+  ActivationFunction getActivationFunction();
 }

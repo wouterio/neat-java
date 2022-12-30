@@ -77,16 +77,16 @@ public enum Setting {
    */
   BREED_CROSS_CHANCE(0.75),
 
-  MUTATION_WEIGHT_CHANCE_RANDOM_RANGE(5.0),
-  ;
+  MUTATION_WEIGHT_CHANCE_RANDOM_RANGE(5.0);
+
 
   private final double defaultSetting;
 
-  private Setting(double defaultSetting) {
+  Setting(final double defaultSetting) {
     this.defaultSetting = defaultSetting;
   }
 
   public double getDefaultValue() {
-    return defaultSetting;
+    return this.defaultSetting;
   }
 }

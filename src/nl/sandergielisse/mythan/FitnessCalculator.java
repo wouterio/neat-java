@@ -19,6 +19,7 @@ public abstract class FitnessCalculator {
 
   public abstract double getFitness(Network network);
 
-  public void generationFinished(Network bestPerforming) {
+  public void generationFinished(final Network bestPerforming) {
+
   }
 }

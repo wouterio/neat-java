@@ -24,66 +24,66 @@ public class Antenna {
   private final CarLocation carLocation;
   private final float angle;
 
-  public Antenna(CarLocation carLocation, float angle) {
+  public Antenna(final CarLocation carLocation, final float angle) {
     this.carLocation = carLocation;
     this.angle = angle;
   }
 
   public float getAngle() {
-    return angle;
+    return this.angle;
   }
 
   public CarLocation getCarLocation() {
-    return carLocation;
+    return this.carLocation;
   }
 
   public double getPreviewLength() {
     return 200;
   }
 
-  public double getEndX(BufferedImage background) {
-    double startX = this.getCarLocation().getX();
-    double totalAngle = this.carLocation.getAngle() + this.angle;
-    double dx = getFreeDistance(background) * Math.cos(Math.toRadians(totalAngle));
+  public double getEndX(final BufferedImage background) {
+    final double startX = this.carLocation.getX();
+    final double totalAngle = this.carLocation.getAngle() + this.angle;
+    final double dx = this.getFreeDistance(background) * Math.cos(Math.toRadians(totalAngle));
     return startX + dx;
   }
 
-  public double getEndY(BufferedImage background) {
-    double startY = this.getCarLocation().getY();
-    double totalAngle = this.carLocation.getAngle() + this.angle;
-    double dy = getFreeDistance(background) * Math.sin(Math.toRadians(totalAngle));
+  public double getEndY(final BufferedImage background) {
+    final double startY = this.carLocation.getY();
+    final double totalAngle = this.carLocation.getAngle() + this.angle;
+    final double dy = this.getFreeDistance(background) * Math.sin(Math.toRadians(totalAngle));
     return startY + dy;
   }
 
-  private final static double STEP_SIZE = 3.0;
+  private static final double STEP_SIZE = 3.0;
   public static final Color ROAD_COLOR = new Color(255, 174, 0);
 
-  public double getFreeDistance(BufferedImage background) {
-    double totalAngle = this.carLocation.getAngle() + this.angle;
-    double startX = this.getCarLocation().getX();
-    double startY = this.getCarLocation().getY();
+  public double getFreeDistance(final BufferedImage background) {
+    final double totalAngle = this.carLocation.getAngle() + this.angle;
+    double startX = this.carLocation.getX();
+    double startY = this.carLocation.getY();
 
-    double dx = STEP_SIZE * Math.cos(Math.toRadians(totalAngle));
-    double dy = STEP_SIZE * Math.sin(Math.toRadians(totalAngle));
+    final double dx = Antenna.STEP_SIZE * Math.cos(Math.toRadians(totalAngle));
+    final double dy = Antenna.STEP_SIZE * Math.sin(Math.toRadians(totalAngle));
 
     while (true) {
       startX += dx;
       startY += dy;
 
-      if (background.getRGB((int) startX, (int) startY) != Antenna.ROAD_COLOR.getRGB() && background.getRGB((int) startX, (int) startY) != Color.RED.getRGB()) {
+      if (background.getRGB((int) startX, (int) startY) != ROAD_COLOR.getRGB() && background.getRGB((int) startX, (int) startY) != Color.RED.getRGB()) {
         // we're off the road
 
-        double distX = this.getCarLocation().getX() - startX;
-        double distY = this.getCarLocation().getY() - startY;
+        final double distX = this.carLocation.getX() - startX;
+        final double distY = this.carLocation.getY() - startY;
 
         return Math.sqrt(distX * distX + distY * distY);
       }
     }
   }
 
-  public void draw(BufferedImage background, Graphics2D g2d) {
+  public void draw(final BufferedImage background, final Graphics2D g2d) {
     g2d.setColor(Color.BLUE);
 
-    g2d.drawLine((int) this.getCarLocation().getX(), (int) this.getCarLocation().getY(), (int) this.getEndX(background), (int) this.getEndY(background));
+    g2d.drawLine((int) this.carLocation.getX(), (int) this.carLocation.getY(), (int) this.getEndX(background), (int) this.getEndY(background));
   }
 }

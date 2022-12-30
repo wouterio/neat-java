@@ -23,7 +23,7 @@ import nl.sandergielisse.mythan.Setting;
 
 public class XOR implements Runnable {
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     new XOR().run();
   }
 
@@ -31,38 +31,38 @@ public class XOR implements Runnable {
 
   {
     // first element is bias
-    inputs[0] = new double[]{1, 0, 0};
-    inputs[1] = new double[]{1, 1, 1};
-    inputs[2] = new double[]{1, 0, 1};
-    inputs[3] = new double[]{1, 1, 0};
+    this.inputs[0] = new double[]{1, 0, 0};
+    this.inputs[1] = new double[]{1, 1, 1};
+    this.inputs[2] = new double[]{1, 0, 1};
+    this.inputs[3] = new double[]{1, 1, 0};
   }
 
   private final double[][] outputs = new double[4][];
 
   {
-    outputs[0] = new double[]{0};
-    outputs[1] = new double[]{0};
-    outputs[2] = new double[]{1};
-    outputs[3] = new double[]{1};
+    this.outputs[0] = new double[]{0};
+    this.outputs[1] = new double[]{0};
+    this.outputs[2] = new double[]{1};
+    this.outputs[3] = new double[]{1};
   }
 
   @Override
   public void run() {
 
-    int inputSize = this.inputs[0].length;
-    int outputSize = this.outputs[0].length;
+    final int inputSize = this.inputs[0].length;
+    final int outputSize = this.outputs[0].length;
 
-    Mythan instance = Mythan.newInstance(inputSize, outputSize, new CustomizedSigmoidActivation(), new FitnessCalculator() {
+    final Mythan instance = Mythan.newInstance(inputSize, outputSize, new CustomizedSigmoidActivation(), new FitnessCalculator() {
 
       @Override
-      public double getFitness(Network network) {
+      public double getFitness(final Network network) {
 
         double off = 0;
         for (int i = 0; i < 4; i++) {
-          double[] in = inputs[i];
+          final double[] in = XOR.this.inputs[i];
 
-          double expectedOut = outputs[i][0];
-          double actualOut = network.calculate(in)[0];
+          final double expectedOut = XOR.this.outputs[i][0];
+          final double actualOut = network.calculate(in)[0];
 
           off += Math.abs(actualOut - expectedOut);
         }

@@ -17,13 +17,14 @@ package examples.car;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class Car extends JFrame implements Runnable {
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     new Car().run();
   }
 
@@ -33,29 +34,29 @@ public class Car extends JFrame implements Runnable {
   {
     try {
       this.background = ImageIO.read(this.getClass().getResource("route.png"));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
 
   public BufferedImage getBackgroundImage() {
-    return background;
+    return this.background;
   }
 
   @Override
   public void run() {
     System.out.println("Enter the preview interval please...");
 
-    Scanner input = new Scanner(System.in);
+    final Scanner input = new Scanner(System.in, StandardCharsets.UTF_8);
     while (input.hasNextLine()) {
-      String nextLine = input.nextLine();
+      final String nextLine = input.nextLine();
 
       input.close();
       int interval = -1;
 
       try {
         interval = Integer.parseInt(nextLine);
-      } catch (NumberFormatException e) {
+      } catch (final NumberFormatException e) {
         System.out.println(nextLine + " is not a number.");
         System.exit(1);
       }
@@ -63,7 +64,7 @@ public class Car extends JFrame implements Runnable {
       if (interval == -1)
         throw new AssertionError();
 
-      new MythanTraining(this, getBackgroundImage(), interval).start();
+      new MythanTraining(this, this.background, interval).start();
     }
     input.close();
   }

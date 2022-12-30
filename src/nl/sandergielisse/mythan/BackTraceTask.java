@@ -30,9 +30,9 @@ public class BackTraceTask {
   private final Genome genome;
   private final ActivationFunction function;
 
-  private Map<Integer, Double> nodeInputValues = new HashMap<>();
+  private final Map<Integer, Double> nodeInputValues = new HashMap<>();
 
-  public BackTraceTask(Genome genome, ActivationFunction function, double[] input) {
+  public BackTraceTask(final Genome genome, final ActivationFunction function, final double[] input) {
     this.genome = genome;
     this.function = function;
 
@@ -41,8 +41,9 @@ public class BackTraceTask {
     }
 
     int c = 0;
-    for (int inputNode : this.genome.getInputNodes()) {
-      this.nodeInputValues.put(inputNode, input[c++]);
+    for (final int inputNode : this.genome.getInputNodes()) {
+      this.nodeInputValues.put(inputNode, input[c]);
+      c++;
     }
   }
 
@@ -50,18 +51,19 @@ public class BackTraceTask {
     /**
      * This is a feed backward so we start at the output nodes and trace back.
      */
-    Map<Integer, Double> cache = new HashMap<>();
+    final Map<Integer, Double> cache = new HashMap<>();
     int c = 0;
-    double[] out = new double[this.genome.getOutputNodes().size()];
-    for (int output : this.genome.getOutputNodes()) {
-      out[c++] = this.getOutput(output, cache);
+    final double[] out = new double[this.genome.getOutputNodes().size()];
+    for (final int output : this.genome.getOutputNodes()) {
+      out[c] = this.getOutput(output, cache);
+      c++;
     }
     return out;
   }
 
-  private double getOutput(int node, Map<Integer, Double> cache) {
+  private double getOutput(final int node, final Map<Integer, Double> cache) {
 
-    Double val = cache.get(node);
+    final Double val = cache.get(node);
     if (val != null)
       return val;
 
@@ -70,7 +72,7 @@ public class BackTraceTask {
      */
     double sum = 0;
 
-    for (Gene gene : this.genome.getGenes()) {
+    for (final Gene gene : this.genome.getGenes()) {
       if (gene.getTo() == node && gene.isEnabled()) {
         if (this.genome.isInputNode(gene.getFrom())) {
           // we have this value
@@ -85,7 +87,7 @@ public class BackTraceTask {
     /**
      * Apply our activation function.
      */
-    double d = this.function.activate(sum);
+    final double d = this.function.activate(sum);
     cache.put(node, d);
     return d;
   }

@@ -23,7 +23,7 @@ public class Gene implements Cloneable {
   private double weight;
   private boolean enabled;
 
-  public Gene(int innovationNumber, int from, int to, double weight, boolean enabled) {
+  public Gene(final int innovationNumber, final int from, final int to, final double weight, final boolean enabled) {
     this.innovationNumber = innovationNumber;
     this.from = from;
     this.to = to;
@@ -32,44 +32,44 @@ public class Gene implements Cloneable {
   }
 
   public int getInnovationNumber() {
-    return innovationNumber;
+    return this.innovationNumber;
   }
 
-  public void setInnovationNumber(int innovationNumber) {
+  public void setInnovationNumber(final int innovationNumber) {
     this.innovationNumber = innovationNumber;
   }
 
   public int getFrom() {
-    return from;
+    return this.from;
   }
 
   public int getTo() {
-    return to;
+    return this.to;
   }
 
   public double getWeight() {
-    return weight;
+    return this.weight;
   }
 
-  public void setWeight(double weight) {
+  public void setWeight(final double weight) {
     this.weight = weight;
   }
 
   public boolean isEnabled() {
-    return enabled;
+    return this.enabled;
   }
 
-  public void setEnabled(boolean enabled) {
+  public void setEnabled(final boolean enabled) {
     this.enabled = enabled;
   }
 
   @Override
   protected Gene clone() {
-    return new Gene(innovationNumber, from, to, weight, enabled);
+    return new Gene(this.innovationNumber, this.from, this.to, this.weight, this.enabled);
   }
 
   @Override
   public String toString() {
-    return "Gene [innovationNumber=" + innovationNumber + ", from=" + from + ", to=" + to + ", weight=" + weight + ", enabled=" + enabled + "]";
+    return "Gene [innovationNumber=" + this.innovationNumber + ", from=" + this.from + ", to=" + this.to + ", weight=" + this.weight + ", enabled=" + this.enabled + "]";
   }
 }

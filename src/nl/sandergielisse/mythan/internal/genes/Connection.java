@@ -20,41 +20,39 @@ public class Connection {
   private final int from;
   private final int to;
 
-  public Connection(int from, int to) {
+  public Connection(final int from, final int to) {
     this.from = from;
     this.to = to;
   }
 
   public int getFrom() {
-    return from;
+    return this.from;
   }
 
   public int getTo() {
-    return to;
+    return this.to;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + from;
-    result = prime * result + to;
+    result = prime * result + this.from;
+    result = prime * result + this.to;
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj)
       return true;
     if (obj == null)
       return false;
-    if (getClass() != obj.getClass())
+    if (this.getClass() != obj.getClass())
       return false;
-    Connection other = (Connection) obj;
-    if (from != other.from)
+    final Connection other = (Connection) obj;
+    if (this.from != other.from)
       return false;
-    if (to != other.to)
-      return false;
-    return true;
+    return this.to == other.to;
   }
 }

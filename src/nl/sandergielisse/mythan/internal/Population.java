@@ -25,7 +25,7 @@ public class Population {
   private final EvolutionCore core;
   private final List<Species> species = new ArrayList<>();
 
-  public Population(EvolutionCore core) {
+  public Population(final EvolutionCore core) {
     this.core = core;
   }
 
@@ -34,27 +34,27 @@ public class Population {
   }
 
   public List<Species> getSpecies() {
-    return species;
+    return this.species;
   }
 
-  public void addGenome(Genome genome) {
-    Species species = this.classify(genome);
+  public void addGenome(final Genome genome) {
+    final Species species = this.classify(genome);
     species.getMembers().add(genome);
   }
 
   /**
    * Sets the genome's species and uses it as a representative if a new species is created.
    */
-  private Species classify(Genome genome) {
-    for (Species existing : this.getSpecies()) {
+  private Species classify(final Genome genome) {
+    for (final Species existing : this.species) {
       if (existing.isCompatible(genome)) {
         genome.setSpecies(existing);
         return existing;
       }
     }
 
-    Species ge = new Species(genome);
-    this.getSpecies().add(ge);
+    final Species ge = new Species(genome);
+    this.species.add(ge);
 
     return ge;
   }
@@ -66,8 +66,8 @@ public class Population {
     Genome best = null;
     double bestFitness = -1;
 
-    for (Species sp : this.species) {
-      for (Genome g : sp.getMembers()) {
+    for (final Species sp : this.species) {
+      for (final Genome g : sp.getMembers()) {
         if (best == null || g.getFitness() > bestFitness) {
           best = g;
           bestFitness = g.getFitness();

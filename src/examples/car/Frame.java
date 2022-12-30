@@ -31,16 +31,16 @@ public class Frame extends JPanel {
 
   private final Car carObject;
 
-  public Frame(Car car) {
+  public Frame(final Car car) {
     this.carObject = car;
-    setBackground(Color.BLACK);
-    setFocusable(true);
+    this.setBackground(Color.BLACK);
+    this.setFocusable(true);
   }
 
   private static final long serialVersionUID = 1L;
   private CarLocation location = new CarLocation();
 
-  public void setLocation(CarLocation location) {
+  public void setLocation(final CarLocation location) {
     this.location = location;
   }
 
@@ -49,15 +49,15 @@ public class Frame extends JPanel {
   {
     try {
       this.car = ImageIO.read(this.getClass().getResource("car.png"));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
 
   @Override
-  public void paintComponent(Graphics g) {
+  public void paintComponent(final Graphics g) {
     super.paintComponent(g);
-    draw(g);
+    this.draw(g);
   }
 
   @Override
@@ -65,30 +65,30 @@ public class Frame extends JPanel {
     return new Dimension(800, 800);
   }
 
-  private void draw(Graphics g) {
-    Graphics2D g2d = (Graphics2D) g;
+  private void draw(final Graphics g) {
+    final Graphics2D g2d = (Graphics2D) g;
 
     g2d.drawImage(this.getBackgroundImage(), 0, 0, null);
 
-    AffineTransform transform = new AffineTransform();
+    final AffineTransform transform = new AffineTransform();
     transform.rotate(Math.toRadians(this.location.getAngle()), this.location.getX(), this.location.getY());
-    AffineTransform old = g2d.getTransform();
+    final AffineTransform old = g2d.getTransform();
     g2d.transform(transform);
 
     g2d.drawImage(this.car, (int) this.location.getX() - this.car.getWidth(null) / 2, (int) this.location.getY() - this.car.getHeight(null) / 2, null);
     g2d.setTransform(old);
 
-    for (Antenna ant : this.getCarLocation().getAntennas()) {
+    for (final Antenna ant : this.location.getAntennas()) {
       ant.draw(this.getBackgroundImage(), g2d);
     }
 
     g2d.setColor(Color.WHITE);
 
-    g2d.setFont(g2d.getFont().deriveFont(20F));
-    g2d.drawString("Speed " + round(this.getCarLocation().getCurrentSpeed() * 100, 3) + "%", 10, 25);
+    g2d.setFont(g2d.getFont().deriveFont(20.0F));
+    g2d.drawString("Speed " + Frame.round(this.location.getCurrentSpeed() * 100, 3) + "%", 10, 25);
   }
 
-  public static double round(double value, int places) {
+  public static double round(final double value, final int places) {
     return new BigDecimal(value).setScale(places, RoundingMode.HALF_UP).doubleValue();
   }
 
@@ -97,14 +97,14 @@ public class Frame extends JPanel {
   }
 
   public BufferedImage getCar() {
-    return car;
+    return this.car;
   }
 
-  public void setCar(BufferedImage car) {
+  public void setCar(final BufferedImage car) {
     this.car = car;
   }
 
   public CarLocation getCarLocation() {
-    return location;
+    return this.location;
   }
 }

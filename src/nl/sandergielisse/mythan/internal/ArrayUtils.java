@@ -19,9 +19,10 @@ import java.util.List;
 
 import nl.sandergielisse.mythan.internal.genes.Connection;
 
-public class ArrayUtils {
+public enum ArrayUtils {
+  ;
 
-  public static boolean equals(List<Connection> a, List<Connection> b) {
+  public static boolean equals(final List<Connection> a, final List<Connection> b) {
     if (a.size() != b.size())
       return false;
 
@@ -33,22 +34,23 @@ public class ArrayUtils {
     return true;
   }
 
-  public static double getAverage(List<Double> list) {
+  public static double getAverage(final List<Double> list) {
     double total = 0;
     double counter = 0;
-    for (double d : list) {
+    for (final double d : list) {
       total += d;
       counter++;
     }
     return total / counter;
   }
 
-  public static boolean allClose(List<Double> list, double allowedDistance) {
-    double average = getAverage(list);
+  public static boolean allClose(final List<Double> list, final double allowedDistance) {
+    final double average = ArrayUtils.getAverage(list);
     boolean allClose = true;
-    for (double answer : list) {
+    for (final double answer : list) {
       if (Math.abs(average - answer) > allowedDistance) {
         allClose = false;
+        break;
       }
     }
     return allClose;

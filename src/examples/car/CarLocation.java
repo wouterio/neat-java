@@ -27,14 +27,14 @@ public class CarLocation {
   private float angle;
   private final List<Antenna> antennas = new ArrayList<>();
 
-  private final static double startX = 400;
-  private final static double startY = 460;
+  private static final double startX = 400;
+  private static final double startY = 460;
 
   public CarLocation() {
-    this(startX, startY, 0);
+    this(CarLocation.startX, CarLocation.startY, 0);
   }
 
-  public CarLocation(double x, double y, float angle) {
+  public CarLocation(final double x, final double y, final float angle) {
     this.x = x;
     this.y = y;
     this.angle = angle;
@@ -47,37 +47,37 @@ public class CarLocation {
   }
 
   public List<Antenna> getAntennas() {
-    return antennas;
+    return this.antennas;
   }
 
   public double getX() {
-    return x;
+    return this.x;
   }
 
-  public void setX(double x) {
+  public void setX(final double x) {
     this.x = x;
   }
 
   public double getY() {
-    return y;
+    return this.y;
   }
 
-  public void setY(double y) {
+  public void setY(final double y) {
     this.y = y;
   }
 
   public float getAngle() {
-    return angle;
+    return this.angle;
   }
 
-  public void setAngle(float angle) {
+  public void setAngle(final float angle) {
     this.angle = angle;
   }
 
   private static final double MAX_CAR_SPEED = 10;
   private double currentSpeed = 4;
 
-  public void tick(boolean rightClicked, boolean leftClicked, double gasPercentage /*0 = no has, 0.5 = same speed , 1 = full gas*/) {
+  public void tick(final boolean rightClicked, final boolean leftClicked, final double gasPercentage /*0 = no has, 0.5 = same speed , 1 = full gas*/) {
 
     if (gasPercentage < 0 || gasPercentage > 1)
       throw new IllegalArgumentException();
@@ -89,33 +89,33 @@ public class CarLocation {
       this.angle += 3.5;
     }
 
-    double gasChange = (gasPercentage - 0.5) * 0.3D;
+    final double gasChange = (gasPercentage - 0.5) * 0.3D;
     this.currentSpeed += gasChange;
 
     if (this.currentSpeed < 4) {
       this.currentSpeed = 4;
     }
 
-    if (this.currentSpeed > MAX_CAR_SPEED)
-      this.currentSpeed = MAX_CAR_SPEED;
+    if (this.currentSpeed > CarLocation.MAX_CAR_SPEED)
+      this.currentSpeed = CarLocation.MAX_CAR_SPEED;
 
     // update the x and y using angle and speed
-    double dx = this.currentSpeed * Math.cos(Math.toRadians(this.angle));
-    double dy = this.currentSpeed * Math.sin(Math.toRadians(this.angle));
+    final double dx = this.currentSpeed * Math.cos(Math.toRadians(this.angle));
+    final double dy = this.currentSpeed * Math.sin(Math.toRadians(this.angle));
 
     this.x += dx;
     this.y += dy;
   }
 
-  public boolean isAlive(BufferedImage background) {
+  public boolean isAlive(final BufferedImage background) {
     return background.getRGB((int) this.x, (int) this.y) == Antenna.ROAD_COLOR.getRGB() || background.getRGB((int) this.x, (int) this.y) == Color.RED.getRGB();
   }
 
-  public boolean isOnFinish(BufferedImage background) {
+  public boolean isOnFinish(final BufferedImage background) {
     return background.getRGB((int) this.x, (int) this.y) == Color.RED.getRGB();
   }
 
   public double getCurrentSpeed() {
-    return this.currentSpeed / MAX_CAR_SPEED; // scale
+    return this.currentSpeed / CarLocation.MAX_CAR_SPEED; // scale
   }
 }

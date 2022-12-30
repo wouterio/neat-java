@@ -23,7 +23,6 @@ import java.util.Set;
 
 import nl.sandergielisse.mythan.Setting;
 import nl.sandergielisse.mythan.internal.genes.Genome;
-import nl.sandergielisse.mythan.internal.genes.Genome.GenomeSorter;
 
 /**
  * A species is a collection of genomes which are genetically close.
@@ -33,56 +32,56 @@ import nl.sandergielisse.mythan.internal.genes.Genome.GenomeSorter;
  */
 public class Species {
 
-  private static int speciesCount = 0;
+  private static int speciesCount;
 
-  private final int id = speciesCount++;
+  private final int id = Species.speciesCount++;
   private Genome representative;
   private final Set<Genome> members = new HashSet<>();
-  private double highestFitness = 0;
-  private int failedGenerations = 0;
+  private double highestFitness;
+  private int failedGenerations;
 
-  public Species(Genome representative) {
+  public Species(final Genome representative) {
     this.representative = representative;
     representative.setSpecies(this);
   }
 
   public int getId() {
-    return id;
+    return this.id;
   }
 
   public double getHighestFitness() {
-    return highestFitness;
+    return this.highestFitness;
   }
 
-  public void setHighestFitness(double highestFitness) {
+  public void setHighestFitness(final double highestFitness) {
     this.highestFitness = highestFitness;
     this.failedGenerations = 0;
   }
 
   public int getFailedGenerations() {
-    return failedGenerations;
+    return this.failedGenerations;
   }
 
-  public void setFailedGenerations(int failedGenerations) {
+  public void setFailedGenerations(final int failedGenerations) {
     this.failedGenerations = failedGenerations;
   }
 
   public Genome getRepresentative() {
-    return representative;
+    return this.representative;
   }
 
-  public void setRepresentative(Genome representative) {
+  public void setRepresentative(final Genome representative) {
     this.representative = representative;
   }
 
-  public boolean isCompatible(Genome genome) {
+  public boolean isCompatible(final Genome genome) {
     return Genome.distance(this.representative, genome) <= genome.getCore().getSetting(Setting.SPECIES_COMPATIBILTY_DISTANCE);
   }
 
   public double getAverageFitness() {
     double total = 0;
     double counter = 0;
-    for (Genome g : this.members) {
+    for (final Genome g : this.members) {
       total += g.getFitness();
       counter++;
     }
@@ -93,24 +92,23 @@ public class Species {
    * Returns list in decrementing order, so the best come first.
    */
   public List<Genome> getBestPerforming() {
-    List<Genome> bestPerforming = new ArrayList<>();
+    final List<Genome> bestPerforming = new ArrayList<>();
 
-    for (Genome genome : this.members) {
+    for (final Genome genome : this.members)
       bestPerforming.add(genome);
-    }
-    Collections.sort(bestPerforming, new GenomeSorter());
+    bestPerforming.sort(new Genome.GenomeSorter());
     return bestPerforming;
   }
 
-  public void remove(Genome g) {
+  public void remove(final Genome g) {
     this.members.remove(g);
   }
 
   public Set<Genome> getMembers() {
-    return members;
+    return this.members;
   }
 
   public void update() {
-    this.setRepresentative(Random.random(this.getMembers()));
+    this.representative = Random.random(this.members);
   }
 }

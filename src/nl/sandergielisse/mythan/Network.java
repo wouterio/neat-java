@@ -17,7 +17,7 @@ package nl.sandergielisse.mythan;
 
 public interface Network {
 
-  public double[] calculate(double[] input);
+  double[] calculate(double[] input);
 
-  public double getFitness();
+  double getFitness();
 }
