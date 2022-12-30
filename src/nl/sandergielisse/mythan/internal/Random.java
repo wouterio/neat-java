@@ -22,6 +22,9 @@ public class Random {
 
   private static final java.util.Random random = new java.util.Random();
 
+
+
+
   static {
     random.setSeed(0L);
   }
