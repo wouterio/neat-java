@@ -18,21 +18,15 @@ package nl.sandergielisse.mythan.internal;
 import java.util.List;
 import java.util.Set;
 
-public enum Random {
-  ;
+public final class Random {
 
   private static final java.util.Random random = new java.util.Random();
-
-
 
 
   static {
     random.setSeed(0L);
   }
 
-  private static java.util.Random getRandom() {
-    return Random.random;
-  }
 
   /**
    * Returns a random object from the given array.
@@ -74,7 +68,7 @@ public enum Random {
 
   /**
    * Picks a random number X (for which 0 <= X < 1) and returns true if the random number is smaller than the chance.
-   *
+   * <p>
    * The smaller the given chance, the more unlikely this method will return true.
    */
   public static boolean success(final double chance) {
@@ -88,5 +82,13 @@ public enum Random {
     if (min >= max)
       throw new IllegalArgumentException("Min (" + min + ") can not be bigger than or equal to max (" + max + ")");
     return min + (max - min) * random.nextDouble();
+  }
+
+
+  //
+
+
+  private Random() {
+    throw new AssertionError("Static class.");
   }
 }
