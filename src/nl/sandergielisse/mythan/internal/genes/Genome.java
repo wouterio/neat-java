@@ -334,7 +334,7 @@ public class Genome implements Cloneable, Network {
 
     final Genome newGenome = new Genome(dominant.core, null, dominant.getInputs(), dominant.getOutputs()); // inputs/outputs should match so it doesn't matter where we get it from
     // the following should also be random if both parents have the gene
-    for (int i = 1; i <= dominant.getHighestInnovationNumber().getNumber(); i++) {
+    for (int i = 0; i <= dominant.getHighestInnovationNumber().getNumber(); i++) {
       final InnovationNumber innovationNumber = InnovationNumber.get(i);
       if (dominant.hasGene(innovationNumber))
         if (other.hasGene(innovationNumber))
@@ -384,7 +384,7 @@ public class Genome implements Cloneable, Network {
     double excess = 0; // use double so it won't be used as an int in the formula
 
     final List<Double> weights = new ArrayList<>();
-    for (int i = 1; i <= longestLength; i++) {
+    for (int i = 0; i <= longestLength; i++) {
       final InnovationNumber innovationNumber = InnovationNumber.get(i);
       final Gene aa = longest.getGene(innovationNumber);
       final Gene bb = shortest.getGene(innovationNumber);
