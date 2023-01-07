@@ -55,6 +55,8 @@ public class Genome implements Cloneable, Network {
   private List<Integer> outputNodes = new ArrayList<>();
 
   private Species species;
+  private double fitness = Double.NaN;
+
 
   public Genome(final EvolutionCore core, final Species member, final Integer[] inputNodes, final Integer[] outputNodes) {
     this.core = core;
@@ -66,7 +68,7 @@ public class Genome implements Cloneable, Network {
   }
 
   public void setSpecies(final Species sp) {
-    if (this.fitness != -1)
+    if (Double.isFinite(this.fitness))
       throw new UnsupportedOperationException("setSpecies() must be called before getFitness()");
     this.species = sp;
   }
@@ -125,7 +127,7 @@ public class Genome implements Cloneable, Network {
   }
 
   public void addInputNode(final int node) {
-    if (this.fitness != -1)
+    if (Double.isFinite(this.fitness))
       throw new UnsupportedOperationException("addInputNode() must be called before getFitness()");
 
     if (this.inputNodes.contains(node))
@@ -135,7 +137,7 @@ public class Genome implements Cloneable, Network {
   }
 
   public void addOutputNode(final int node) {
-    if (this.fitness != -1)
+    if (Double.isFinite(this.fitness))
       throw new UnsupportedOperationException("addOutputNode() must be called before getFitness()");
 
     if (this.outputNodes.contains(node))
@@ -173,7 +175,7 @@ public class Genome implements Cloneable, Network {
   }
 
   public void addGene(final Gene gene, final Genome parent1, final Genome parent2) {
-    if (this.fitness != -1)
+    if (Double.isFinite(this.fitness))
       throw new UnsupportedOperationException("addGene() must be called before getFitness()");
 
     if (this.genes.containsKey(gene.getInnovationNumber()))
@@ -268,8 +270,7 @@ public class Genome implements Cloneable, Network {
    * innovation numbers, we replace it.
    */
   public void fixDuplicates() {
-
-    if (this.fitness != -1)
+    if (Double.isFinite(this.fitness))
       throw new UnsupportedOperationException("fixDuplicates() must be called before getFitness()");
 
     for (final Species sp : this.core.getPopulationManager().getPopulation().getSpecies())
@@ -425,8 +426,6 @@ public class Genome implements Cloneable, Network {
     return new BackTraceTask(this, this.core.getActivationFunction(), input).calculateOutput();
   }
 
-  private double fitness = -1;
-
   private double calculateFitness() {
     this.fitness = this.core.getFitnessCalculator().getFitness(this);
     if (this.fitness > this.species.getHighestFitness())
@@ -439,7 +438,7 @@ public class Genome implements Cloneable, Network {
    * or -1 if calculateFitness() hasn't been called yet.
    */
   public double getFitness() {
-    if (this.fitness == -1)
+    if (Double.isNaN(this.fitness))
       return this.calculateFitness();
     return this.fitness;
   }
@@ -454,7 +453,7 @@ public class Genome implements Cloneable, Network {
     public int compare(final Genome o1, final Genome o2) {
       final double a1 = o1.getFitness();
       final double a2 = o2.getFitness();
-
+//      return Double.compare(a2, a1);
       if (a1 > a2)
         return -1;
       if (a1 < a2)
