@@ -54,6 +54,11 @@ public class InnovationNumber implements Comparable<InnovationNumber> {
   }
 
   @Override
+  public String toString() {
+    return Integer.toString(this.number);
+  }
+
+  @Override
   public int compareTo(final InnovationNumber that) {
     return Integer.compare(this.number, that.number);
   }
