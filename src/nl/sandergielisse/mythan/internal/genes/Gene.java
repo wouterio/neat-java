@@ -15,15 +15,17 @@
  */
 package nl.sandergielisse.mythan.internal.genes;
 
+import nl.sandergielisse.mythan.internal.InnovationNumber;
+
 public class Gene implements Cloneable {
 
-  private int innovationNumber;
+  private InnovationNumber innovationNumber;
   private final int from;
   private final int to;
   private double weight;
   private boolean enabled;
 
-  public Gene(final int innovationNumber, final int from, final int to, final double weight, final boolean enabled) {
+  public Gene(final InnovationNumber innovationNumber, final int from, final int to, final double weight, final boolean enabled) {
     this.innovationNumber = innovationNumber;
     this.from = from;
     this.to = to;
@@ -31,11 +33,11 @@ public class Gene implements Cloneable {
     this.enabled = enabled;
   }
 
-  public int getInnovationNumber() {
+  public InnovationNumber getInnovationNumber() {
     return this.innovationNumber;
   }
 
-  public void setInnovationNumber(final int innovationNumber) {
+  public void setInnovationNumber(final InnovationNumber innovationNumber) {
     this.innovationNumber = innovationNumber;
   }
 

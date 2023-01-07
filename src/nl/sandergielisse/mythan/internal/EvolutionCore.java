@@ -53,7 +53,6 @@ public class EvolutionCore implements Mythan {
   };
 
   private final FitnessCalculator fitnessCalculator;
-  private int currentInnovationNumber = 1;
   private final ActivationFunction activationFunction;
   private final PopulationManager populationManager = new PopulationManager(this);
 
@@ -82,12 +81,6 @@ public class EvolutionCore implements Mythan {
   @Override
   public void setSetting(final Setting setting, final double value) {
     this.settings.put(setting, value);
-  }
-
-  public int getNextInnovationNumber() {
-    final int i = this.currentInnovationNumber;
-    this.currentInnovationNumber++;
-    return i;
   }
 
   @Override

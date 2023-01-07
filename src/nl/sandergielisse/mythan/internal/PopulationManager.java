@@ -230,7 +230,7 @@ public class PopulationManager {
     final Genome gen = new Genome(this.evolutionCore, null, inputs, outputs);
     for (int in = 1; in <= this.evolutionCore.getInputSize(); in++) {
       for (int out = 1; out <= this.evolutionCore.getOutputSize(); out++) {
-        gen.addGene(new Gene(this.evolutionCore.getNextInnovationNumber(), in, this.evolutionCore.getInputSize() + out, Random.random(-dist, dist), true), null, null);
+        gen.addGene(new Gene(InnovationNumber.next(), in, this.evolutionCore.getInputSize() + out, Random.random(-dist, dist), true), null, null);
       }
     }
     return gen;

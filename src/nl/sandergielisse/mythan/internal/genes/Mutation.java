@@ -20,18 +20,18 @@ import java.util.Collection;
 import java.util.List;
 
 import nl.sandergielisse.mythan.Setting;
+import nl.sandergielisse.mythan.internal.InnovationNumber;
 import nl.sandergielisse.mythan.internal.Random;
 
 /**
  * There are three types of mutations.
- *
- * 		1. Add a new node. The new input weight to that node will be 1.
- * 		   The output from the new node will be set to the old connection's weight value.
- *
- * 		2. Add a new link with a random weight between two existing nodes.
- *
- * 		3. The weights of an existing connection are changed.
- *
+ * <p>
+ * 1. Add a new node. The new input weight to that node will be 1.
+ * The output from the new node will be set to the old connection's weight value.
+ * <p>
+ * 2. Add a new link with a random weight between two existing nodes.
+ * <p>
+ * 3. The weights of an existing connection are changed.
  */
 public class Mutation {
 
@@ -55,11 +55,11 @@ public class Mutation {
       final int from = randomGene.getFrom();
       final int to = randomGene.getTo();
 
-      this.genome.getCore().getNextInnovationNumber();
+      // this.genome.getCore().getNextInnovationNumber();
 
       final int newNodeId = this.genome.getHighestNode() + 1;
-      this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), from, newNodeId, 1.0D, true), null, null);
-      this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), newNodeId, to, randomGene.getWeight(), true), null, null);
+      this.genome.addGene(new Gene(InnovationNumber.next(), from, newNodeId, 1.0D, true), null, null);
+      this.genome.addGene(new Gene(InnovationNumber.next(), newNodeId, to, randomGene.getWeight(), true), null, null);
     }
 
     /**
@@ -100,7 +100,7 @@ public class Mutation {
         } while (maybeNew == null || maybeNew.getFrom() == maybeNew.getTo() || currentConnections.contains(maybeNew) || this.isRecurrent(maybeNew));
 
         // add it to the network
-        this.genome.addGene(new Gene(this.genome.getCore().getNextInnovationNumber(), maybeNew.getFrom(), maybeNew.getTo(), Random.random(-1, 1), true), null, null);
+        this.genome.addGene(new Gene(InnovationNumber.next(), maybeNew.getFrom(), maybeNew.getTo(), Random.random(-1, 1), true), null, null);
       } catch (final MutationFailedException e) {
         // System.out.println("Mutation Failed: " + e.getMessage());
       }
@@ -128,16 +128,17 @@ public class Mutation {
   }
 
   public boolean isRecurrent(final Connection with) {
-    final Genome tmpGenome = this.genome.clone(); // clone so we can change its genes without actually affecting the original genome
+    final Genome copy = this.genome.clone(); // clone so we can change its genes without actually affecting the original genome
 
     if (with != null) {
-      final Gene gene = new Gene(tmpGenome.getHighestInnovationNumber() + 1, with.getFrom(), with.getTo(), 0, true);
-      tmpGenome.addGene(gene, null, null);
+      final InnovationNumber next = InnovationNumber.get(copy.getHighestInnovationNumber().getNumber() + 1);
+      final Gene gene = new Gene(next, with.getFrom(), with.getTo(), 0, true);
+      copy.addGene(gene, null, null);
     }
 
     boolean recc = false;
-    for (final int hiddenNode : tmpGenome.getHiddenNodes()) {
-      if (this.isRecurrent(new ArrayList<>(), tmpGenome, hiddenNode)) {
+    for (final int hiddenNode : copy.getHiddenNodes()) {
+      if (this.isRecurrent(new ArrayList<>(), copy, hiddenNode)) {
         recc = true;
       }
     }
